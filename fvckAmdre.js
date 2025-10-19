@@ -1,6 +1,8 @@
+
 let automationIntervalId = null;
 
 function performAutomationStep() {
+
   const wordElement = document.getElementById('word');
 
   if (!wordElement || !wordElement.textContent.trim()) {
@@ -10,6 +12,7 @@ function performAutomationStep() {
 
   const targetWord = wordElement.textContent.trim();
   let correctAnswer = null;
+
   const pageScripts = Array.from(document.querySelectorAll('script'));
   const regex = new RegExp(`word:\\s*"${targetWord}",\\s*correct:\\s*"(.*?)"`);
 
@@ -27,24 +30,33 @@ function performAutomationStep() {
 
     if (answerElement) {
       console.log(`Clicando na resposta para "${targetWord}": "${correctAnswer}"`);
-      answerElement.click(); 
+      answerElement.click();
+
+
+      setTimeout(() => {
+        const nextButton = document.getElementById('nextBtn');
+        
+        if (nextButton && nextButton.style.display !== 'none') {
+          nextButton.click();
+        } else {
+        }
+      }, 500);
+
     } else {
-      console.warn(`Elemento com o texto "${correctAnswer}" não encontrado.`);
+
     }
   } else {
-    console.log(`Aguardando resposta para "${targetWord}"...`);
   }
 }
 
 
 function stopAutomation(event) {
-
   if (automationIntervalId && (event.type === 'keydown' || event.isTrusted)) {
     clearInterval(automationIntervalId);
     automationIntervalId = null;
     console.log('%cLoop PARADO', 'color: red; font-weight: bold; font-size: 16px;');
     document.removeEventListener('keydown', stopAutomation);
-    document.removeEventListener('click', stopAutomation);
+    document.removeEventListener('click', stopAutomation, true); 
   }
 }
 
@@ -58,9 +70,10 @@ function startAutomation() {
   console.log('%cLoop iniciado. Pressione qualquer tecla ou clique para parar.', 'color: green; font-weight: bold; font-size: 16px;');
 
   document.addEventListener('keydown', stopAutomation);
-  document.addEventListener('click', stopAutomation);
+  document.addEventListener('click', stopAutomation, true);
 
-  automationIntervalId = setInterval(performAutomationStep, 1500);
+  automationIntervalId = setInterval(performAutomationStep, 2000); 
 }
+
 
 startAutomation();
